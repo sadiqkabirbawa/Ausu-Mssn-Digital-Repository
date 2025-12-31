@@ -113,4 +113,5 @@ Role: Superuser (bypasses all permission checks)
 
 
 ### Author: 
-for any issue contact abbaphy@gmail.com
+
+for any issue contact sadiqkabirskb@gmail.com
