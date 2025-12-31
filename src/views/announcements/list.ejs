@@ -1,0 +1,79 @@
+<% layout('layout') %>
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h3 class="mb-1">Announcements</h3>
+    <div class="text-muted small">
+      <%= announcements.length %> item<%= announcements.length === 1 ? '' : 's' %>
+    </div>
+  </div>
+
+  <% if (currentUser && (currentUser.isSuperuser || currentUser.role === 'ADMIN' || currentUser.role === 'EXECUTIVE')) { %>
+    <a class="btn btn-sm btn-success" href="/announcements/create">
+      <i class="bi bi-megaphone-fill me-1"></i> New Announcement
+    </a>
+  <% } %>
+</div>
+
+<!-- Empty state -->
+<% if (!announcements.length) { %>
+  <div class="border rounded-3 p-4 bg-white text-center">
+    <div class="mb-2">
+      <i class="bi bi-chat-left-text text-muted" style="font-size: 2rem;"></i>
+    </div>
+    <h6 class="mb-1">No announcements yet</h6>
+    <p class="text-muted small mb-0">When announcements are published, they’ll appear here.</p>
+  </div>
+<% } %>
+
+<!-- List -->
+<div class="vstack gap-3">
+  <% announcements.forEach(a => { 
+       const created = new Date(a.createdAt);
+  %>
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center"
+                  style="width: 36px; height: 36px;">
+              <i class="bi bi-megaphone-fill"></i>
+            </span>
+            <div>
+              <h6 class="mb-1"><%= a.title %></h6>
+              <div class="small text-muted">
+                <i class="bi bi-calendar-event me-1"></i>
+                <%= created.toLocaleString() %>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge <%= a.isPublic ? 'text-bg-success' : 'text-bg-success' %>">
+              <i class="bi <%= a.isPublic ? 'bi-unlock' : 'bi-lock' %> me-1"></i>
+              <%= a.isPublic ? 'Public' : 'Private' %>
+            </span>
+          </div>
+        </div>
+
+        <hr class="my-3">
+
+        <p class="mb-0" style="white-space: pre-wrap;"><%= a.body %></p>
+        <% if (currentUser && (currentUser.isSuperuser || currentUser.role === 'ADMIN' || currentUser.role === 'EXECUTIVE')) { %>
+          <div class="mt-3 d-flex gap-2">
+            <a class="btn btn-sm btn-outline-success" href="/announcements/<%= a.id %>/edit">
+              <i class="bi bi-pencil-square me-1"></i> Edit
+            </a>
+            <form method="post" action="/announcements/<%= a.id %>/delete" onsubmit="return confirm('Delete this announcement?');">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+              <button class="btn btn-sm btn-danger">
+                <i class="bi bi-trash me-1"></i> Delete
+              </button>
+            </form>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  <% }) %>
+</div>

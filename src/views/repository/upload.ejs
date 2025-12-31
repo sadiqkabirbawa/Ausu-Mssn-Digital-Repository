@@ -1,0 +1,98 @@
+<% layout('layout') %>
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h3 class="mb-0">Upload Resource</h3>
+  <div class="d-flex gap-2">
+    <a href="/repository" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-arrow-left"></i> Back to Resources
+    </a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Form -->
+  <div class="col-lg-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <form method="post" enctype="multipart/form-data" class="row g-3">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+
+          <!-- Title -->
+          <div class="col-md-7">
+            <label class="form-label">Title <span class="text-danger">*</span></label>
+            <input name="title" class="form-control" placeholder="e.g. Week 3 Tafsir Notes" required>
+            <div class="form-text">Keep it short and descriptive.</div>
+          </div>
+
+          <!-- File Type -->
+          <div class="col-md-5">
+            <label class="form-label">File Type</label>
+            <select name="fileType" class="form-select">
+              <option value="PDF">PDF</option>
+              <option value="AUDIO">Audio</option>
+              <option value="VIDEO">Video</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+
+          <!-- Description -->
+          <div class="col-12">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="3" placeholder="Optional: brief summary, speaker, course/week, etc."></textarea>
+          </div>
+
+          <!-- Category -->
+          <div class="col-md-6">
+            <label class="form-label">Category</label>
+            <select name="categoryId" class="form-select">
+              <% categories.forEach(c => { %>
+                <option value="<%= c.id %>"><%= c.name %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <!-- File -->
+          <div class="col-md-6">
+            <label class="form-label">File <span class="text-danger">*</span></label>
+            <input type="file" name="file" class="form-control"
+                   accept=".pdf,.mp3,.wav,.m4a,.mp4,.mkv,.mov,.avi,.zip,.rar,.7z"
+                   required>
+            <div class="form-text">
+              Max 50&nbsp;MB. For large videos, consider compressing before upload.
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="col-12 d-flex gap-2">
+            <button class="btn btn-success">
+              <i class="bi bi-cloud-upload"></i> Save
+            </button>
+            <a href="/repository" class="btn btn-outline-success">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tips / Policy -->
+  <div class="col-lg-4">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <h6 class="mb-3">Upload Tips</h6>
+        <ul class="small text-muted mb-0">
+          <li>Use a clear, searchable title (course, week, topic).</li>
+          <li>Pick the most relevant category.</li>
+          <li>PDFs render best for notes/handouts; compress large media.</li>
+          <li>Only upload materials you have the right to share.</li>
+        </ul>
+        <hr>
+        <div class="small">
+          <span class="badge text-bg-light border me-1"><i class="bi bi-file-earmark-pdf"></i> PDF</span>
+          <span class="badge text-bg-light border me-1"><i class="bi bi-music-note-beamed"></i> Audio</span>
+          <span class="badge text-bg-light border me-1"><i class="bi bi-camera-reels"></i> Video</span>
+          <span class="badge text-bg-light border"><i class="bi bi-archive"></i> Other</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

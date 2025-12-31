@@ -1,0 +1,101 @@
+<% layout('layout') %>
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h3 class="mb-1">Audio Preview</h3>
+    <div class="text-muted small"><%= resource.title %></div>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="/repository/<%= resource.id %>/download" class="btn btn-sm btn-success">
+      <i class="bi bi-download me-1"></i> Download
+    </a>
+    <a href="/repository" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Back to Resources
+    </a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <div class="text-center mb-4">
+          <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+            <i class="bi bi-music-note-beamed" style="font-size: 2rem;"></i>
+          </div>
+          <h5 class="mb-2"><%= resource.title %></h5>
+          <% if (resource.description) { %>
+            <p class="text-muted mb-0"><%= resource.description %></p>
+          <% } %>
+        </div>
+
+        <div class="bg-light rounded-3 p-4">
+          <audio controls class="w-100" preload="metadata">
+            <source src="<%= filePath %>" type="audio/mpeg">
+            <source src="<%= filePath %>" type="audio/wav">
+            <source src="<%= filePath %>" type="audio/mp4">
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+
+        <div class="mt-4">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-tag text-muted"></i>
+                <span class="text-muted">Category:</span>
+                <span class="badge bg-light border"><%= resource.ResourceCategory ? resource.ResourceCategory.name : 'Uncategorized' %></span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-calendar-event text-muted"></i>
+                <span class="text-muted">Added:</span>
+                <span><%= new Date(resource.createdAt).toLocaleDateString() %></span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-cloud-arrow-down text-muted"></i>
+                <span class="text-muted">Downloads:</span>
+                <span><%= resource.downloads || 0 %></span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-file-earmark-music text-muted"></i>
+                <span class="text-muted">Type:</span>
+                <span class="badge bg-info"><%= resource.fileType || 'AUDIO' %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <h6 class="mb-3">Audio Controls</h6>
+        <ul class="list-unstyled small text-muted mb-0">
+          <li class="mb-2"><i class="bi bi-play-circle me-2"></i>Click play to start listening</li>
+          <li class="mb-2"><i class="bi bi-pause-circle me-2"></i>Use pause to stop playback</li>
+          <li class="mb-2"><i class="bi bi-volume-up me-2"></i>Adjust volume with the slider</li>
+          <li class="mb-2"><i class="bi bi-arrow-clockwise me-2"></i>Seek to any position in the audio</li>
+        </ul>
+        
+        <hr class="my-3">
+        
+        <div class="d-grid gap-2">
+          <a href="/repository/<%= resource.id %>/download" class="btn btn-success">
+            <i class="bi bi-download me-1"></i> Download Audio
+          </a>
+          <a href="/repository" class="btn btn-outline-success">
+            <i class="bi bi-list me-1"></i> Browse More Resources
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

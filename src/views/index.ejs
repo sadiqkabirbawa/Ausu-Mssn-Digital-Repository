@@ -1,0 +1,180 @@
+<% layout('layout') %>
+
+<!-- Hero -->
+<section class="position-relative overflow-hidden rounded-4 shadow-sm mb-5">
+  <!-- Background image (replace with your own if you like) -->
+  <div class="ratio ratio-21x9 d-none d-md-block">
+    <img
+      src="/static/images/1.jpg"
+      alt="Campus"
+      class="object-fit-cover w-100 h-100">
+  </div>
+  <div class="ratio ratio-4x3 d-md-none">
+    <img
+      src="/static/images/2.jpg"
+      alt="Campus"
+      class="object-fit-cover w-100 h-100">
+  </div>
+
+  <!-- Overlay -->
+  <div class="position-absolute top-0 start-0 w-100 h-100"
+       style="background: linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.55) 100%);"></div>
+
+  <!-- Content -->
+  <div class="position-absolute top-50 start-50 translate-middle w-100" style="max-width: 1100px;">
+    <div class="px-3 px-md-4">
+      <div class="d-flex align-items-center gap-3 mb-3 text-white">
+        <img src="/static/images/logo.png" alt="AUSU MSSN"
+             width="56" height="56"
+             class="rounded-circle border border-2 border-white bg-white">
+        <span class="fw-semibold small text-uppercase letter-spacing-1">
+          AUSU Muslim Students Society of Nigeria
+        </span>
+      </div>
+
+      <h1 class="display-6 fw-bold text-white mb-2">
+        There is no deity worthy of worship except Allah, and Muhammad is His Messenger
+      </h1>
+      <p class="lead text-white mb-4" style="max-width: 680px;">
+        Access course resources, announcements, and community updates in one place.
+        Support the mission with secure donations via Online.
+      </p>
+
+      <div class="d-flex flex-wrap gap-2"> 
+        <a href="/donations" class="btn btn-outline-light btn-lg px-4">
+          <i class="bi bi-heart-fill me-1"></i> Make Your Donation
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Quick features -->
+<section class="mb-5">
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <span class="badge rounded-pill text-bg-success me-2"><i class="bi bi-file-earmark-text"></i></span>
+            <h5 class="card-title mb-0">Resources Repository</h5>
+          </div>
+          <p class="text-muted mb-3">PDFs, audio lectures, and videos, neatly organized by category.</p>
+          <a href="/repository" class="btn btn-sm btn-outline-success">
+            Browse resources <i class="bi bi-arrow-right-short"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <span class="badge rounded-pill text-bg-success me-2"><i class="bi bi-paypal"></i></span>
+            <h5 class="card-title mb-0">Secure Donations</h5>
+          </div>
+          <p class="text-muted mb-3">Support our programs and initiatives through our platform.</p>
+          <a href="/donations" class="btn btn-sm btn-outline-success">
+            Donate now <i class="bi bi-arrow-right-short"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <span class="badge rounded-pill text-bg-success me-2"><i class="bi bi-megaphone"></i></span>
+            <h5 class="card-title mb-0">Stay Informed</h5>
+          </div>
+          <p class="text-muted mb-3">Get the latest announcements and community updates.</p>
+          <a href="/announcements" class="btn btn-sm btn-outline-success text-success-emphasis">
+            View updates <i class="bi bi-arrow-right-short"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<% layout('layout') %>
+
+<section class="text-center mb-5">
+  <div class="small text-uppercase fw-semibold text-success">About Us</div>
+  <h2 class="fw-bold mt-1">Get to Know About MSSN</h2>
+  <p class="text-muted mx-auto" style="max-width: 760px">
+    The Muslim Students Society of Nigeria (MSSN) nurtures Islamic scholarship, leadership,
+    and service among students—strengthening faith, character, and community impact.
+  </p>
+</section>
+
+<!-- Vision -->
+<div class="card border-0 shadow-sm mb-4 overflow-hidden">
+  <div class="row g-0">
+    <div class="col-lg-6">
+      <img src="/static/images/f.png" class="w-100 h-100 object-fit-cover" alt="MSSN Vision">
+    </div>
+    <div class="col-lg-6 d-flex align-items-center">
+      <div class="p-4 p-lg-5">
+        <h3 class="fw-bold mb-2">Vision</h3>
+        <p class="text-muted mb-0">
+          A spiritually grounded, academically excellent, and socially responsible student
+          community across Nigeria—guided by Qur’an and Sunnah, confident in identity,
+          and empowered to uplift society with knowledge, mercy, and integrity.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mission -->
+<div class="card border-0 shadow-sm mb-4 overflow-hidden">
+  <div class="row g-0 flex-lg-row-reverse">
+    <div class="col-lg-6">
+      <img src="/static/images/d.png" class="w-100 h-100 object-fit-cover" alt="MSSN Mission">
+    </div>
+    <div class="col-lg-6 d-flex align-items-center">
+      <div class="p-4 p-lg-5">
+        <h3 class="fw-bold mb-2">Mission</h3>
+        <p class="text-muted mb-0">
+          To cultivate students who embody Islamic manners and excellence by
+          <strong>organising learning circles (halaqah)</strong>, mentorship and da‘wah programs,
+          community service, mental-wellbeing and welfare support, and leadership development—
+          building skills to reduce social ills and increase public benefit.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Our Story -->
+<div class="card border-0 shadow-sm mb-5 overflow-hidden">
+  <div class="row g-0">
+    <div class="col-lg-6">
+      <img src="/static/images/e.png" class="w-100 h-100 object-fit-cover" alt="MSSN Story">
+    </div>
+    <div class="col-lg-6 d-flex align-items-center">
+      <div class="p-4 p-lg-5">
+        <h3 class="fw-bold mb-2">Our Story</h3>
+        <p class="text-muted">
+          Since 1954, MSSN has served as a unifying platform for Muslim students in Nigeria—
+          supporting academic success and spiritual growth on campuses nationwide. From Jumu‘ah
+          logistics to exam-period welfare, from public lectures to humanitarian relief, our
+          volunteers keep showing up for the Ummah. Today, we leverage digital tools to share
+          authentic knowledge, coordinate programmes, and fund impactful projects—so every
+          student can thrive and give back.
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="/repository" class="btn btn-success">
+            Explore Resources
+          </a>
+          <a href="/donations" class="btn btn-outline-success">
+            Support the Work
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

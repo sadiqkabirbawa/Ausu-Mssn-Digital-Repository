@@ -1,0 +1,19 @@
+<% if (messages && (messages.error.length || messages.success.length)) { %>
+  <div class="mb-3">
+    <% if (messages.error.length) { %>
+      <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <div><%= messages.error.join('<br/>') %></div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+
+    <% if (messages.success.length) { %>
+      <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <div><%= messages.success.join('<br/>') %></div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+  </div>
+<% } %>

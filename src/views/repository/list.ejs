@@ -1,0 +1,261 @@
+<% layout('layout') %>
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h3 class="mb-1">Resource Repository</h3>
+    <div class="text-muted small">
+      <% if (pagination && pagination.totalCount > 0) { %>
+        Showing <%= ((pagination.currentPage - 1) * 12) + 1 %>-<%= Math.min(pagination.currentPage * 12, pagination.totalCount) %> 
+        of <%= pagination.totalCount %> resources
+        <% if (filters && (filters.q || filters.category || filters.fileType)) { %>
+          • <span class="text-success">Filtered results</span>
+        <% } %>
+      <% } else { %>
+        <%= resources.length %> item<%= resources.length === 1 ? '' : 's' %>
+        <% if (filters && (filters.q || filters.category)) { %> • filtered<% } %>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <% if (filters && (filters.q || filters.category || filters.fileType)) { %>
+      <a class="btn btn-outline-success btn-sm" href="/repository">Clear Filters</a>
+    <% } %>
+    <% if (currentUser && (currentUser.isSuperuser || currentUser.role === 'ADMIN' || currentUser.role === 'EXECUTIVE')) { %>
+      <a class="btn btn-success btn-sm" href="/repository/upload">
+        <i class="bi bi-upload me-1"></i> Upload
+      </a>
+    <% } %>
+  </div>
+</div>
+
+<!-- Enhanced Search and Filters -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-3">
+      <!-- Search Input -->
+      <div class="col-md-4">
+        <label for="q" class="form-label">Search</label>
+        <input 
+          type="text" 
+          id="q" 
+          name="q" 
+          class="form-control" 
+          placeholder="Search by title, description, or file type..." 
+          value="<%= (filters && filters.q) || '' %>"
+        >
+      </div>
+
+      <!-- Category Filter -->
+      <div class="col-md-3">
+        <label for="category" class="form-label">Category</label>
+        <select id="category" name="category" class="form-select">
+          <option value="">All Categories</option>
+          <% categories.forEach(cat => { %>
+            <option value="<%= cat.slug %>" <%= (filters && filters.category === cat.slug) ? 'selected' : '' %>>
+              <%= cat.name %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+
+      <!-- File Type Filter -->
+      <div class="col-md-2">
+        <label for="fileType" class="form-label">File Type</label>
+        <select id="fileType" name="fileType" class="form-select">
+          <option value="">All Types</option>
+          <% if (fileTypes) { %>
+            <% fileTypes.forEach(type => { %>
+              <option value="<%= type %>" <%= (filters && filters.fileType === type) ? 'selected' : '' %>>
+                <%= type.toUpperCase() %>
+              </option>
+            <% }) %>
+          <% } %>
+        </select>
+      </div>
+
+      <!-- Sort Options -->
+      <div class="col-md-2">
+        <label for="sortBy" class="form-label">Sort By</label>
+        <select id="sortBy" name="sortBy" class="form-select">
+          <option value="createdAt" <%= (filters && filters.sortBy === 'createdAt') ? 'selected' : '' %>>Date Added</option>
+          <option value="title" <%= (filters && filters.sortBy === 'title') ? 'selected' : '' %>>Title</option>
+          <option value="downloads" <%= (filters && filters.sortBy === 'downloads') ? 'selected' : '' %>>Downloads</option>
+          <option value="fileType" <%= (filters && filters.sortBy === 'fileType') ? 'selected' : '' %>>File Type</option>
+        </select>
+      </div>
+
+      <!-- Sort Order -->
+      <div class="col-md-1">
+        <label for="sortOrder" class="form-label">Order</label>
+        <select id="sortOrder" name="sortOrder" class="form-select">
+          <option value="DESC" <%= (filters && filters.sortOrder === 'DESC') ? 'selected' : '' %>>↓</option>
+          <option value="ASC" <%= (filters && filters.sortOrder === 'ASC') ? 'selected' : '' %>>↑</option>
+        </select>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="col-12">
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-search me-1"></i> Search
+          </button>
+          <a href="/repository" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-clockwise me-1"></i> Clear Filters
+          </a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Empty state -->
+<% if (!resources.length) { %>
+  <div class="border rounded-3 p-4 bg-white text-center">
+    <div class="mb-2">
+      <i class="bi bi-archive text-muted" style="font-size: 2rem;"></i>
+    </div>
+    <h6 class="mb-1">No resources found</h6>
+    <p class="text-muted small mb-3">Try adjusting your filters or search terms.</p>
+    <% if (currentUser && (currentUser.isSuperuser || currentUser.role === 'ADMIN' || currentUser.role === 'EXECUTIVE')) { %>
+      <a class="btn btn-sm btn-success" href="/repository/upload">
+        <i class="bi bi-upload me-1"></i> Upload a resource
+      </a>
+    <% } %>
+  </div>
+<% } %>
+
+<!-- Grid -->
+<div class="row g-3">
+  <% resources.forEach(r => { 
+       const catName = r.ResourceCategory ? r.ResourceCategory.name : 'Uncategorized';
+       const created = new Date(r.createdAt);
+  %>
+    <div class="col-md-6 col-lg-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body d-flex flex-column">
+          <!-- Category + type -->
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="badge text-bg-light border"><i class="bi bi-tag"></i> <%= catName %></span>
+            <span class="badge <%= r.fileType === 'PDF' ? 'text-bg-danger' 
+                                   : r.fileType === 'AUDIO' ? 'text-bg-info'
+                                   : r.fileType === 'VIDEO' ? 'text-bg-warning'
+                                   : 'text-bg-secondary' %>">
+              <%= r.fileType || 'OTHER' %>
+            </span>
+          </div>
+
+          <!-- Title -->
+          <h6 class="card-title mb-2"><%= r.title %></h6>
+
+          <!-- Optional: short description (if you have one) -->
+          <% if (r.description) { %>
+            <p class="card-text text-muted small mb-3"><%= r.description %></p>
+          <% } %>
+
+          <!-- Meta -->
+          <div class="text-muted small mt-auto">
+            <i class="bi bi-calendar-event me-1"></i>
+            <%= created.toLocaleDateString() %>
+            <% if (typeof r.downloads === 'number') { %>
+              • <i class="bi bi-cloud-arrow-down me-1"></i><%= r.downloads %> downloads
+            <% } %>
+          </div>
+        </div>
+
+        <div class="card-footer bg-white border-0 pt-0 pb-3 mx-3">
+          <div class="d-grid gap-2">
+            <% 
+              const fileExt = r.filePath ? r.filePath.split('.').pop().toLowerCase() : '';
+              const canPreview = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'mp3', 'wav', 'm4a', 'ogg', 'mp4', 'webm'].includes(fileExt);
+            %>
+            <% if (canPreview) { %>
+              <a class="btn btn-outline-success btn-sm" href="/repository/<%= r.id %>/preview">
+                <i class="bi bi-eye me-1"></i> Preview
+              </a>
+            <% } %>
+            <a class="btn btn-success btn-sm" href="/repository/<%= r.id %>/download">
+              <i class="bi bi-download me-1"></i> Download
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<!-- Pagination -->
+<% if (pagination && pagination.totalPages > 1) { %>
+  <nav aria-label="Resource pagination" class="mt-4">
+    <ul class="pagination justify-content-center">
+      <!-- Previous Page -->
+      <% if (pagination.hasPrevPage) { %>
+        <li class="page-item">
+          <a class="page-link" href="?<%= new URLSearchParams({...filters, page: pagination.prevPage}).toString() %>">
+            <i class="bi bi-chevron-left"></i> Previous
+          </a>
+        </li>
+      <% } else { %>
+        <li class="page-item disabled">
+          <span class="page-link">
+            <i class="bi bi-chevron-left"></i> Previous
+          </span>
+        </li>
+      <% } %>
+
+      <!-- Page Numbers -->
+      <% 
+        const startPage = Math.max(1, pagination.currentPage - 2);
+        const endPage = Math.min(pagination.totalPages, pagination.currentPage + 2);
+      %>
+      
+      <% if (startPage > 1) { %>
+        <li class="page-item">
+          <a class="page-link" href="?<%= new URLSearchParams({...filters, page: 1}).toString() %>">1</a>
+        </li>
+        <% if (startPage > 2) { %>
+          <li class="page-item disabled">
+            <span class="page-link">...</span>
+          </li>
+        <% } %>
+      <% } %>
+
+      <% for (let i = startPage; i <= endPage; i++) { %>
+        <li class="page-item <%= i === pagination.currentPage ? 'active' : '' %>">
+          <% if (i === pagination.currentPage) { %>
+            <span class="page-link"><%= i %></span>
+          <% } else { %>
+            <a class="page-link" href="?<%= new URLSearchParams({...filters, page: i}).toString() %>"><%= i %></a>
+          <% } %>
+        </li>
+      <% } %>
+
+      <% if (endPage < pagination.totalPages) { %>
+        <% if (endPage < pagination.totalPages - 1) { %>
+          <li class="page-item disabled">
+            <span class="page-link">...</span>
+          </li>
+        <% } %>
+        <li class="page-item">
+          <a class="page-link" href="?<%= new URLSearchParams({...filters, page: pagination.totalPages}).toString() %>"><%= pagination.totalPages %></a>
+        </li>
+      <% } %>
+
+      <!-- Next Page -->
+      <% if (pagination.hasNextPage) { %>
+        <li class="page-item">
+          <a class="page-link" href="?<%= new URLSearchParams({...filters, page: pagination.nextPage}).toString() %>">
+            Next <i class="bi bi-chevron-right"></i>
+          </a>
+        </li>
+      <% } else { %>
+        <li class="page-item disabled">
+          <span class="page-link">
+            Next <i class="bi bi-chevron-right"></i>
+          </span>
+        </li>
+      <% } %>
+    </ul>
+  </nav>
+<% } %>

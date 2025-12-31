@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%= title || 'AUSU MSSN' %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/app.css">
+  </head>
+  <body class="d-flex flex-column min-vh-100 bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm sticky-top">
+      <div class="container">
+        <!-- Logo + Title -->
+        <a class="navbar-brand d-flex align-items-center fw-bold text-white" href="/">
+          <img src="/static/images/logo.png" alt="AUSU Logo" height="42" class="me-2 rounded-circle bg-white p-1">
+          AUSU MSSN
+        </a>
+
+        <!-- Mobile toggler -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+          <!-- Left: primary links -->
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link text-white <%= title==='Resources' ? 'active fw-semibold' : '' %>" href="/repository">Resources</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white <%= title==='Announcements' ? 'active fw-semibold' : '' %>" href="/announcements">Announcements</a>
+            </li>
+          </ul>
+
+          <!-- Right: account/admin/actions -->
+          <div class="d-flex align-items-center gap-2">
+            <% if (currentUser) { %>
+              <!-- Account dropdown -->
+              <div class="dropdown">
+                <button class="btn btn-sm btn-light dropdown-toggle d-flex align-items-center gap-2" type="button" id="accountMenu"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-person-circle me-1"></i> Account
+                  <!-- Notification Bell -->
+                  <div class="position-relative">
+                    <i class="bi bi-bell" id="notificationBell"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationBadge" style="display: none;">
+                      0
+                    </span>
+                  </div>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="accountMenu">
+                  <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                  <li><a class="dropdown-item" href="/profile/password">Change Password</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="/notifications">
+                    <i class="bi bi-bell me-2"></i> Notifications
+                    <span class="badge bg-danger ms-2" id="notificationDropdownBadge" style="display: none;">0</span>
+                  </a></li>
+                </ul>
+              </div>
+
+              <!-- Admin-only dropdown -->
+              <% if (currentUser.isSuperuser || currentUser.role === 'ADMIN') { %>
+                <div class="dropdown">
+                  <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="adminMenu"
+                          data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-gear-fill me-1"></i> Admin
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="adminMenu">
+                    <li><a class="dropdown-item" href="/admin">Dashboard</a></li>
+                    <li><a class="dropdown-item" href="/admin/users">Users</a></li>
+                    <li><a class="dropdown-item" href="/admin/users/new">New User</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/admin/categories">Categories</a></li>
+                    <li><a class="dropdown-item" href="/admin/resources">Resources</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/admin/rbac/roles">RBAC</a></li>
+                  </ul>
+                </div>
+              <% } %>
+
+              <!-- Logout -->
+              <a class="btn btn-sm btn-outline-light" href="/accounts/logout">
+                <i class="bi bi-box-arrow-right me-1"></i> Logout
+              </a>
+            <% } else { %>
+              <!-- Guest (high-contrast on green navbar) -->
+              <div class="d-flex gap-2">
+                <a class="btn btn-sm btn-outline-light" href="/accounts/login">
+                  <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                </a>
+                <a class="btn btn-sm btn-light" href="/accounts/register">
+                  <i class="bi bi-person-plus me-1"></i> Register
+                </a>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="container flex-grow-1 py-4">
+      <%- include('partials/flash') %>
+      <%- body %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white border-top py-3 mt-auto">
+      <div class="container text-center text-white small">
+        &copy; <%= new Date().getFullYear() %> <span class="text-success">AUSU</span> MSSN
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Notification System -->
+    <script>
+      // Load notification count on page load
+      document.addEventListener('DOMContentLoaded', function() {
+        <% if (currentUser) { %>
+          loadNotificationCount();
+          // Refresh notification count every 30 seconds
+          setInterval(loadNotificationCount, 30000);
+        <% } %>
+      });
+
+      async function loadNotificationCount() {
+        try {
+          const response = await fetch('/notifications/unread-count');
+          const data = await response.json();
+          
+          const badge = document.getElementById('notificationBadge');
+          const dropdownBadge = document.getElementById('notificationDropdownBadge');
+          
+          if (data.count > 0) {
+            badge.textContent = data.count;
+            badge.style.display = 'inline-block';
+            dropdownBadge.textContent = data.count;
+            dropdownBadge.style.display = 'inline-block';
+          } else {
+            badge.style.display = 'none';
+            dropdownBadge.style.display = 'none';
+          }
+        } catch (error) {
+          console.error('Error loading notification count:', error);
+        }
+      }
+    </script>
+  </body>
+</html>

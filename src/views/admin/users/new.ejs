@@ -1,0 +1,163 @@
+<% layout('layout') %>
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h3 class="mb-1">Onboard New User</h3>
+    <div class="text-muted small">Create an account and (optionally) assign RBAC roles.</div>
+  </div>
+  <a href="/admin/users" class="btn btn-outline-success btn-sm">
+    <i class="bi bi-arrow-left"></i> Back to Users
+  </a>
+</div>
+
+<div class="row g-4">
+  <!-- Onboarding form -->
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-0 pb-0">
+        <h5 class="card-title mb-1">User Details</h5>
+        <div class="text-muted small">Basic information required to sign in.</div>
+      </div>
+
+      <div class="card-body">
+        <form method="post" action="/admin/users/create" class="row g-3">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+
+          <!-- Username / Email -->
+          <div class="col-md-6">
+            <label class="form-label">Username <span class="text-danger">*</span></label>
+            <input class="form-control" name="username" placeholder="e.g. abbasule" required>
+            <div class="form-text">3–30 characters; letters and numbers are best.</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Email <span class="text-danger">*</span></label>
+            <input type="email" class="form-control" name="email" placeholder="name@example.com" required>
+          </div>
+
+          <!-- Names -->
+          <div class="col-md-6">
+            <label class="form-label">First Name</label>
+            <input class="form-control" name="firstName" placeholder="Optional">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Last Name</label>
+            <input class="form-control" name="lastName" placeholder="Optional">
+          </div>
+
+          <!-- Password -->
+          <div class="col-md-6">
+            <label class="form-label">Password <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input id="pwd" type="password" class="form-control" name="password" minlength="6" required aria-describedby="pwdToggle">
+              <button class="btn btn-outline-success" type="button" id="pwdToggle" aria-label="Show password">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+            <div class="form-text">Minimum 6 characters. Use a mix of letters & numbers.</div>
+          </div>
+
+          <!-- Legacy role (for backward compatibility) -->
+          <div class="col-md-6">
+            <label class="form-label">Legacy Role</label>
+            <select class="form-select" name="role">
+              <option value="MEMBER">Member</option>
+              <option value="EXECUTIVE">Executive</option>
+              <option value="ADMIN">Admin</option>
+            </select>
+            <div class="form-text">Used by older sections. RBAC governs actual permissions.</div>
+          </div>
+
+          <!-- RBAC roles -->
+          <div class="col-12">
+            <label class="form-label">Assign RBAC Roles (optional)</label>
+            <div class="border rounded-3 p-3 bg-light" style="max-height: 240px; overflow:auto;">
+              <% if (roles && roles.length) { %>
+                <div class="row row-cols-1 row-cols-sm-2 g-2">
+                  <% roles.forEach(r => { %>
+                    <div class="col">
+                      <div class="form-check">
+                        <input class="form-check-input rbac-role" type="checkbox" name="roles" value="<%= r.id %>" id="role-<%= r.id %>">
+                        <label class="form-check-label" for="role-<%= r.id %>">
+                          <span class="fw-semibold"><%= r.name %></span>
+                          <% if (r.description) { %>
+                            <span class="text-muted"> — <%= r.description %></span>
+                          <% } %>
+                        </label>
+                      </div>
+                    </div>
+                  <% }) %>
+                </div>
+              <% } else { %>
+                <div class="text-muted small">
+                  No RBAC roles yet. Create roles in <a href="/admin/rbac/roles">RBAC → Roles</a>.
+                </div>
+              <% } %>
+            </div>
+            <div class="small text-muted mt-1">
+              Selected roles: <span id="rbacCount">0</span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="col-12">
+            <button class="btn btn-success w-100">
+              <i class="bi bi-person-plus"></i> Create User
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Side panel -->
+  <div class="col-lg-5">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-0 pb-0">
+        <h6 class="card-title mb-1">What happens next?</h6>
+        <div class="text-muted small">Access & permissions overview</div>
+      </div>
+      <div class="card-body">
+        <ul class="small mb-0 text-muted">
+          <li>New users can log in immediately with the credentials you set.</li>
+          <li>RBAC roles grant permissions like <code>repo.upload</code>, <code>ann.create</code>, and <code>admin.access</code>.</li>
+          <li>Manage roles/permissions anytime in <a href="/admin/rbac/roles">RBAC → Roles</a>.</li>
+        </ul>
+        <hr>
+        <div class="d-flex flex-wrap gap-2">
+          <span class="badge text-bg-success"><i class="bi bi-person"></i> Member</span>
+          <span class="badge text-bg-info"><i class="bi bi-briefcase"></i> Executive</span>
+          <span class="badge text-bg-danger"><i class="bi bi-shield-lock"></i> Admin</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Password show/hide
+  (function () {
+    const pwd = document.getElementById('pwd');
+    const toggle = document.getElementById('pwdToggle');
+    if (pwd && toggle) {
+      toggle.addEventListener('click', function () {
+        const isPwd = pwd.getAttribute('type') === 'password';
+        pwd.setAttribute('type', isPwd ? 'text' : 'password');
+        this.innerHTML = isPwd ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+        this.setAttribute('aria-label', isPwd ? 'Hide password' : 'Show password');
+      });
+    }
+
+    // RBAC count feedback
+    const boxes = document.querySelectorAll('.rbac-role');
+    const counter = document.getElementById('rbacCount');
+    function updateCount() {
+      let c = 0;
+      boxes.forEach(b => { if (b.checked) c++; });
+      if (counter) counter.textContent = c;
+    }
+    boxes.forEach(b => b.addEventListener('change', updateCount));
+    updateCount();
+  })();
+</script>
